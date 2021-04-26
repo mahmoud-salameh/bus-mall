@@ -73,7 +73,7 @@ header nav a:hover::after {
   grid-template-columns: 1fr 1fr 1fr;
   gap: 20px;
   background: #eee;
-  height: 100%;
+  /* height: 100%; */
   padding: 20px;
 }
 
