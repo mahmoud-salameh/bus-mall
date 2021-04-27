@@ -12,9 +12,7 @@ let clickNum = 0;
 let pictureLeftIndex = 0;
 let rightPictureIndex = 0;
 let centerPictureIndex = 0;
-let centerOdd = 0;
-let rightOdd = 0;
-let leftOdd = 0;
+
 
 function Images( name ) {
   this.name = name;
@@ -25,12 +23,16 @@ function Images( name ) {
 }
 
 Images.all = [];
-
+Images.prevIndex = [];
 
 for ( let i = 0; i < pictureArray.length; i++ ) {
   new Images(pictureArray[i]);
 }
 
+function voteAndSave (){
+
+  localStorage.setItem('votesStorage', JSON.stringify(Images.all));
+}
 
 function eventHandler( task ) {
   if ( ( task.target.id === 'pictureLeft' || task.target.id === 'pictureRight' || task.target.id === 'pictureCenter' ) && clickNum < 25 ) {
@@ -59,6 +61,13 @@ function eventHandler( task ) {
 
 
 function renderImages() {
+
+  Images.prevIndex = [];
+  if(clickNum > 0) {
+    Images.prevIndex.push(pictureLeftIndex);
+    Images.prevIndex.push(rightPictureIndex);
+    Images.prevIndex.push(centerPictureIndex);
+  }
   let leftIndex = randomNumber( 0, pictureArray.length - 1 );
   let rightIndex;
   let centerIndex;
@@ -66,11 +75,8 @@ function renderImages() {
   do {
     rightIndex = randomNumber( 0, pictureArray.length - 1 );
     centerIndex = randomNumber(0, pictureArray.length + 1);
-  } while ( leftIndex === rightIndex || leftIndex === centerIndex || rightIndex === centerIndex);
+  } while ( leftIndex === rightIndex || leftIndex === centerIndex || centerIndex=== rightIndex );
 
-  // centerOdd = centerIndex;
-  // leftOdd = leftIndex;
-  // rightOdd = rightIndex;
 
   pictureLeft.src = Images.all[leftIndex].img;
   pictureRight.src = Images.all[rightIndex].img;
@@ -105,13 +111,35 @@ function viewResult(event) {
   }
   buttResulte.removeEventListener('click', viewResult);
   renderChart();
+  voteAndSave();
 }
 
 buttResulte.addEventListener('click', viewResult);
+
 function randomNumber( min, max ) {
   min = Math.ceil( min );
   max = Math.floor( max );
-  return Math.floor( Math.random() * ( max - min + 1 ) + min ); //The maximum is inclusive and the minimum is inclusive
+
+  let randomPicture;
+  let allowed;
+
+  do {
+    randomPicture = Math.floor(Math.random() * (max - min) + min );
+    allowed = true;
+
+    for(let i = 0; i < Images.prevIndex.length; i++) {
+      if (Images.prevIndex[i] === randomPicture){
+        allowed = false;
+      }
+    }
+  }while (!allowed);
+
+
+
+
+
+
+  return randomPicture;
 }
 
 
@@ -170,12 +198,16 @@ function renderChart (){
 }
 
 
+function getStorage(){
+let getStorage = JSON.parse(localStorage.getItem('view'));
 
+renderImages();
+}
 
 
 
 picture.addEventListener( 'click', eventHandler );
 renderImages();
 viewResult();
-
+getStorage();
 // view.innerHTML = ' ';
