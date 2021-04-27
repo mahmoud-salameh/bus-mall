@@ -29,6 +29,10 @@ for ( let i = 0; i < pictureArray.length; i++ ) {
   new Images(pictureArray[i]);
 }
 
+function voteAndSave (){
+
+  localStorage.setItem('votesStorage', JSON.stringify(Images.all));
+}
 
 function eventHandler( task ) {
   if ( ( task.target.id === 'pictureLeft' || task.target.id === 'pictureRight' || task.target.id === 'pictureCenter' ) && clickNum < 25 ) {
@@ -107,6 +111,7 @@ function viewResult(event) {
   }
   buttResulte.removeEventListener('click', viewResult);
   renderChart();
+  voteAndSave();
 }
 
 buttResulte.addEventListener('click', viewResult);
@@ -193,12 +198,16 @@ function renderChart (){
 }
 
 
+function getStorage(){
+let getStorage = JSON.parse(localStorage.getItem('view'));
 
+renderImages();
+}
 
 
 
 picture.addEventListener( 'click', eventHandler );
 renderImages();
 viewResult();
-
+getStorage();
 // view.innerHTML = ' ';
